@@ -2,8 +2,8 @@
 # Maintainer: Martijn Braam <martijn@brixit.nl>
 pkgname=device-pine64-pinephonepro
 pkgdesc="PINE64 PinePhone Pro"
-pkgver=2.1
-pkgrel=2
+pkgver=2.2
+pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
 arch="aarch64"
@@ -79,10 +79,14 @@ package() {
 	install -Dm644 -t "$pkgdir"/boot/EFI/Boot \
 		"$srcdir"/bootaa64.efi
 
-	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card \
-		"$srcdir"/PinePhonePro.conf \
+	# Alsa usecase manager config
+	install -Dm644 -t "$pkgdir"/usr/share/alsa/ucm2/PinePhonePro \
 		"$srcdir"/HiFi.conf \
+		"$srcdir"/PinePhonePro.conf \
 		"$srcdir"/VoiceCall.conf
+	mkdir -p "$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card
+	ln -s /usr/share/alsa/ucm2/PinePhonePro/PinePhonePro.conf \
+		"$pkgdir"/usr/share/alsa/ucm2/conf.d/simple-card/PinePhonePro.conf
 
 	# Keyboard config
 	install -Dm755 "$srcdir"/ppkb.sh "$pkgdir"/etc/profile.d/ppkb.sh
@@ -105,7 +109,7 @@ sha512sums="
 e69752fc7f2b8552ba2e1e6da5b6bec0e284c7f14bc09576c862faeb5154a44522535a919ae5aca33a22fd14557e802595a7c96c59b9362c5ac5b991a8eac5fc  grub.cfg
 0f9357d4eea089628fbceb1e3e96d21a3f4329aeb6743158a6f877f967ef274506404eba949d5f01b7e1adea149f9a3aef992a5e8cd4181f93ab00909b1c5ecd  grub_early.cfg
 ac22c856af81d00aa6a349b68cf9e8645bf38277d9aafd07f1f46f5f932f48d37b9dfdcc8772fff4027f914c9b4c3b4a11c51bd9f2aa1abbc53abd3f54adb818  HiFi.conf
-c57dae885c9a5f366f18b38a3ce3e21627baaf014724537eced9e8d6ac3ca61ade42b9fcf84db350b1e64742760e8cf4fe10639d41052387927238e85c3c4769  PinePhonePro.conf
+299ad33d81fa7d08eb098a6ee0440e1bed3352057fe3bc6d888a4602b1c8db5ab9eafd36496a2879c544cd9037889616e8f4b6e8fa52c1e1fa2f97eb31902144  PinePhonePro.conf
 e978876bda8874e30df75c80554ccbbc0dd202c852ecae0b5c1a0d845402a630962afc2691c6f7d5f478fb0e4be045af4ef62ad0b1ce77f62fe2f155dc0a9cff  VoiceCall.conf
 43f67e94491791685cdbb4874bb3034b1d297bdf3d23e7405c45ba8c58de72b4fb6a9943b79f46ef7b8f4dbc4d9db254ebec8eb3453d720a5a8fad277c6a9d88  ppkb.sh
 "
