@@ -1,0 +1,54 @@
+# Reference: <https://postmarketos.org/vendorkernel>
+# Kernel config based on: arch/arm64/configs/(CHANGEME!)
+
+pkgname=linux-xiaomi-elish
+pkgver=4.19.113
+pkgrel=0
+pkgdesc="Xiaomi Pad 5 Pro kernel from lineageos sm8250 meta"
+arch="aarch64"
+_carch="arm64"
+_flavor="xiaomi-elish"
+url="https://kernel.org"
+license="GPL-2.0-only"
+options="!strip !check !tracedeps pmb:cross-native"
+makedepends="
+	bash
+	bc
+	bison
+	devicepkg-dev
+	flex
+	openssl-dev
+	perl
+"
+
+# Source
+_repository="android_kernel_xiaomi_sm8250"
+_commit="9eb2570ef9f46f3b15f5b48bf1da43e6830a30ab"
+_config="config-$_flavor.$arch"
+source="
+	$pkgname-$_commit.tar.gz::https://github.com/LineageOS/$_repository/archive/$_commit.tar.gz
+	$_config
+"
+builddir="$srcdir/$_repository-$_commit"
+_outdir="out"
+
+prepare() {
+	default_prepare
+	. downstreamkernel_prepare
+}
+
+build() {
+	unset LDFLAGS
+	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
+}
+
+package() {
+	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" \
+		"$_flavor" "$_outdir"
+}
+
+sha512sums="
+5c8d8cbea6764cc174e478e30c9226e3ec130eae675c780feba6e42357b8d601882bfa1622207c0ef7484db3b18ba9e617fe857a76d996340a15688834efe8cd  linux-xiaomi-elish-9eb2570ef9f46f3b15f5b48bf1da43e6830a30ab.tar.gz
+db654c7d735e844eb2526159fdd473f4e9dd6d654918d62e1b946254c7bcc58ce11f505e85d8869763221b85b6a16504e54076bf2e441b13a8dd207eff2adb9c  config-xiaomi-elish.aarch64
+"
